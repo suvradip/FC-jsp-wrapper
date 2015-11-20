@@ -42,7 +42,7 @@ FusionCharts fObject = new FusionCharts("column2d","chart1",600,400,"chart","jso
 ###### **Render**
 Public method to generate html code for rendering chart. This function assumes that you've already included the FusionCharts JavaScript library in your page.
 ##### Contributors
-Sahasrangshu Guha (https://github.com/sguha-work)
+Sahasrangshu Guha (https://github.com/sguha-work), 
 Suvradip Saha	 (https://github.com/suvradip)
 ###License
 
