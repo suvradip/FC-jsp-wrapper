@@ -17,7 +17,6 @@
         <script src="../scripts/fusioncharts.js"></script>
     </head>
     <body>
-        <h1>Hello World!</h1>
         
         <div id="chart"></div>
         <%
@@ -85,7 +84,7 @@
                         600,400,// chartWidth, chartHeight
                         "chart",// chartContainer
                         "json",// dataFormat
-                        gson.toJson(dataMap)
+                        gson.toJson(dataMap) //dataSource
                     );
            
             %>
