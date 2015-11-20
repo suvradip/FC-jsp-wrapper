@@ -1,13 +1,14 @@
-package org.apache.jsp.array;
+package org.apache.jsp.databaseExample;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
-import java.util.*;
 import com.example.FusionCharts;
+import java.sql.*;
+import java.util.*;
 import com.google.gson.*;
 
-public final class JsonExample_jsp extends org.apache.jasper.runtime.HttpJspBase
+public final class basic_002dexample_jsp extends org.apache.jasper.runtime.HttpJspBase
     implements org.apache.jasper.runtime.JspSourceDependent {
 
   private static final JspFactory _jspxFactory = JspFactory.getDefaultFactory();
@@ -51,6 +52,31 @@ public final class JsonExample_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("\n");
       out.write("\n");
       out.write("\n");
+
+    
+/* 
+    The following 4 code lines contain the database connection information.
+    Alternatively, you can move these code lines to a separate file and
+    include the file here. You can also modify this code based on your 
+    database connection. 
+ */
+
+   String hostdb = "localhost:3306";  // MySQl host
+   String userdb = "root";  // MySQL username
+   String passdb = "";  // MySQL password
+   String namedb = "fusioncharts_jspsample";  // MySQL database name
+   
+    Connection con;
+            
+    DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+    con = DriverManager.getConnection("jdbc:mysql://" + hostdb + "/" + namedb , userdb , passdb);
+     String sql="select * from Country";         
+     PreparedStatement pt=con.prepareStatement(sql);    
+     ResultSet rs=pt.executeQuery();
+    
+    
+      out.write("\n");
+      out.write("\n");
       out.write("<!DOCTYPE html>\n");
       out.write("<html>\n");
       out.write("    <head>\n");
@@ -59,24 +85,11 @@ public final class JsonExample_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("        <script src=\"../scripts/fusioncharts.js\"></script>\n");
       out.write("    </head>\n");
       out.write("    <body>\n");
-      out.write("        \n");
-      out.write("        <div id=\"chart\"></div>\n");
+      out.write("         <div id=\"chart\"></div>\n");
       out.write("        ");
 
-        /* 
-            google-gson
-    
-            Gson is a Java library that can be used to convert Java Objects 
-            into their JSON representation. It can also be used to convert a
-            JSON string to an equivalent Java object. Gson can work with 
-            arbitrary Java objects including
-            pre-existing objects that you do not have source-code of.
-            link : https://github.com/google/gson  
-            
-         */
             Gson gson = new Gson();
             
-             // The 'chartobj' map object holds the chart attributes and data.
             Map<String, String> chartobj = new HashMap<String, String>();
             
             chartobj.put("caption", "Split of Visitors by Age Group");
@@ -108,43 +121,22 @@ public final class JsonExample_jsp extends org.apache.jasper.runtime.HttpJspBase
             chartobj.put("legendItemFontSize" , "10");
             chartobj.put("legendItemFontColor" , "#666666");
             chartobj.put("useDataPlotColorForLabels" , "1");
-            
-        /*
-             The data to be plotted on the chart is stored in the 
-            'actualData' map object  in the key-value form.
-        */
-            Map<String, String> actualData = new HashMap<String, String>();
-            
-            actualData.put("Teenage" , "1250400");
-            actualData.put("Adult" , "1463300");
-            actualData.put("Mid-age" , "1050700");
-            actualData.put("Senior" , "491000");
-           
-        /*
-            Convert the data in the `actualData` object into a format that can
-            be consumed by FusionCharts. The data for the chart should be in an 
-            array wherein each element of the array is a JSON object having the
-            "label" and “value” as keys.
-        */   
-            
-            ArrayList arrData = new ArrayList();
-        /*
-            Iterate through the data in `actualData` and insert in
-            to the `$arrData` array.
-        */ 
-            for(Map.Entry m:actualData.entrySet()){
-                 
+ 
+            ArrayList alData = new ArrayList();
+            while(rs.next())
+            {
                 Map<String, String> lv = new HashMap<String, String>();
-                lv.put("label", (String) m.getKey());
-                lv.put("value", (String) m.getValue());
-                arrData.add(lv);
-            }    
+                lv.put("label", rs.getString("Name"));
+                lv.put("value", rs.getString("Population"));
+                alData.add(lv);             
+            }
             
+            rs.close();
+ 
              Map<String, String> dataMap = new LinkedHashMap<String, String>();  
-             
-             
+ 
              dataMap.put("chart", gson.toJson(chartobj));
-             dataMap.put("data", gson.toJson(arrData));
+             dataMap.put("data", gson.toJson(alData));
 
             FusionCharts columnChart= new FusionCharts(
             "column2d",// chartType
@@ -161,8 +153,7 @@ public final class JsonExample_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("            ");
       out.print(columnChart.render());
       out.write("\n");
-      out.write("            \n");
-      out.write("            \n");
+      out.write("        \n");
       out.write("    </body>\n");
       out.write("</html>\n");
     } catch (Throwable t) {

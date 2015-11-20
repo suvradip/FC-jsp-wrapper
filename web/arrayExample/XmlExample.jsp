@@ -1,7 +1,6 @@
 <%-- 
     Document   : XmlExample
-    Created on : 18 Nov, 2015, 5:11:28 PM
-    Author     : suvradipsaha
+    Author     : suvradip saha
 --%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="java.util.*" %>
@@ -12,8 +11,10 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
+        <title>Loading Data from an XML String Generated from an Array - Fusioncharts.com</title>
+        <!--  Include the `fusioncharts.js` file. This file is needed to render the chart. Ensure that the path to this JS file is correct. Otherwise, it may lead to JavaScript errors. -->
         <script src="../scripts/fusioncharts.js"></script>
+        <!-- End -->
     </head>
     <body>
         
@@ -24,9 +25,9 @@
             Set up templates for the XML data. To create an XML string, using templates is an easier option that manual string concatenation.
         */
             
-            String chartXML = "&lt;chart __attributes__&gt;__set__&lt;/chart&gt;";
+            String chartXML = "<chart __attributes__>__set__</chart>";
             String attributeTemplate = "__key__=\"__value__\" ";
-            String setXMLTemplate = "&lt;set label=\"__label__\" value=\"__value__\" /&gt; ";
+            String setXMLTemplate = "<set label=\"__label__\" value=\"__value__\" />";
 
             /* chartobj is the map object that is initialized to store the chart attributes. */
             
@@ -122,9 +123,6 @@
             chartXML = chartXML.replaceAll("__attributes__",  chartAttributeString.toString());
             // Replace the data sets
             chartXML = chartXML.replaceAll("__set__",  setAttributeString.toString());
-            // Replacing &lt; and &gt; as '<' and '>'
-            chartXML = chartXML.replaceAll("&lt;", "<");
-            chartXML = chartXML.replaceAll("&gt;", ">");
 
             FusionCharts columnChart= new FusionCharts(
             "column2d",// chartType

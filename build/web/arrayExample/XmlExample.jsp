@@ -12,7 +12,9 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Loading Data from an XML String Generated from an Array - Fusioncharts.com</title>
+        <!--  Include the `fusioncharts.js` file. This file is needed to render the chart. Ensure that the path to this JS file is correct. Otherwise, it may lead to JavaScript errors. -->
         <script src="../scripts/fusioncharts.js"></script>
+        <!-- End -->
     </head>
     <body>
         

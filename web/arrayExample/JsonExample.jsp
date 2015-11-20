@@ -1,7 +1,6 @@
 <%-- 
     Document   : JsonExample
-    Created on : 18 Nov, 2015, 5:11:09 PM
-    Author     : suvradipsaha
+    Author     : suvradip saha
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -13,15 +12,29 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
+        <title>Loading Data from a JSON String Generated from an Array - Fusioncharts.com</title>
+        <!--  Include the `fusioncharts.js` file. This file is needed to render the chart. Ensure that the path to this JS file is correct. Otherwise, it may lead to JavaScript errors. -->
         <script src="../scripts/fusioncharts.js"></script>
+        <!-- End -->
     </head>
     <body>
         
         <div id="chart"></div>
         <%
-              Gson gson = new Gson();
+        /* 
+            google-gson
+    
+            Gson is a Java library that can be used to convert Java Objects 
+            into their JSON representation. It can also be used to convert a
+            JSON string to an equivalent Java object. Gson can work with 
+            arbitrary Java objects including
+            pre-existing objects that you do not have source-code of.
+            link : https://github.com/google/gson  
             
+         */
+            Gson gson = new Gson();
+            
+            // The 'chartobj' map object holds the chart attributes and data.
             Map<String, String> chartobj = new HashMap<String, String>();
             
             chartobj.put("caption", "Split of Visitors by Age Group");
@@ -54,29 +67,45 @@
             chartobj.put("legendItemFontColor" , "#666666");
             chartobj.put("useDataPlotColorForLabels" , "1");
             
-            Map<String, String> dataobj = new HashMap<String, String>();
+        /*
+             The data to be plotted on the chart is stored in the 
+            'actualData' map object  in the key-value form.
+        */
+            Map<String, String> actualData = new HashMap<String, String>();
             
-            dataobj.put("Teenage" , "1250400");
-            dataobj.put("Adult" , "1463300");
-            dataobj.put("Mid-age" , "1050700");
-            dataobj.put("Senior" , "491000");
+            actualData.put("Teenage" , "1250400");
+            actualData.put("Adult" , "1463300");
+            actualData.put("Mid-age" , "1050700");
+            actualData.put("Senior" , "491000");
            
+        /*
+            Convert the data in the `actualData` object into a format that can
+            be consumed by FusionCharts. The data for the chart should be in an 
+            array wherein each element of the array is a JSON object having the
+            "label" and “value” as keys.
+        */   
             
-            
-            ArrayList alData = new ArrayList();
-             for(Map.Entry m:dataobj.entrySet()){
+            ArrayList arrData = new ArrayList();
+        /*
+            Iterate through the data in `actualData` and insert in
+            to the `$arrData` array.
+        */ 
+            for(Map.Entry m:actualData.entrySet()){
                  
-                 Map<String, String> lv = new HashMap<String, String>();
-                 lv.put("label", (String) m.getKey());
-                 lv.put("value", (String) m.getValue());
-                 alData.add(lv);
-               }    
+                Map<String, String> lv = new HashMap<String, String>();
+                lv.put("label", (String) m.getKey());
+                lv.put("value", (String) m.getValue());
+                arrData.add(lv);
+            }    
             
+            //create 'dataMap' map object to make a complete FC datasource.
              Map<String, String> dataMap = new LinkedHashMap<String, String>();  
-             
-             
+        /*
+            gson.toJson() the data to retrieve the string containing the
+            JSON representation of the data in the array.
+        */  
              dataMap.put("chart", gson.toJson(chartobj));
-             dataMap.put("data", gson.toJson(alData));
+             dataMap.put("data", gson.toJson(arrData));
 
             FusionCharts columnChart= new FusionCharts(
             "column2d",// chartType

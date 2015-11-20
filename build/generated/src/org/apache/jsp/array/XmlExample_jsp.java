@@ -5,7 +5,6 @@ import javax.servlet.http.*;
 import javax.servlet.jsp.*;
 import java.util.*;
 import com.example.FusionCharts;
-import com.google.gson.*;
 
 public final class XmlExample_jsp extends org.apache.jasper.runtime.HttpJspBase
     implements org.apache.jasper.runtime.JspSourceDependent {
@@ -62,7 +61,16 @@ public final class XmlExample_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("        <div id=\"chart\"></div>\n");
       out.write("        ");
 
-              Gson gson = new Gson();
+           
+            /*
+            Set up templates for the XML data. To create an XML string, using templates is an easier option that manual string concatenation.
+        */
+            
+            String chartXML = "<chart __attributes__>__set__</chart>";
+            String attributeTemplate = "__key__=\"__value__\" ";
+            String setXMLTemplate = "<set label=\"__label__\" value=\"__value__\" />";
+
+            /* chartobj is the map object that is initialized to store the chart attributes. */
             
             Map<String, String> chartobj = new HashMap<String, String>();
             
@@ -96,6 +104,8 @@ public final class XmlExample_jsp extends org.apache.jasper.runtime.HttpJspBase
             chartobj.put("legendItemFontColor" , "#666666");
             chartobj.put("useDataPlotColorForLabels" , "1");
             
+            
+            // The data to be plotted on the chart is stored in the 'dataobj' object.
             Map<String, String> dataobj = new HashMap<String, String>();
             
             dataobj.put("Teenage" , "1250400");
@@ -103,37 +113,73 @@ public final class XmlExample_jsp extends org.apache.jasper.runtime.HttpJspBase
             dataobj.put("Mid-age" , "1050700");
             dataobj.put("Senior" , "491000");
            
+            /*
+            To convert the chart attributes map object, 'chartobj', to XML, 
+            we will use the templates instead of manipulating the strings. 
+            Individual attribute strings will be stored in the array; they will then 
+            be combined into one string.
+        */
             
+            ArrayList<String> chartAttributeList = new ArrayList<String>();
+             // Iterate over each chart attribute and convert it into an attribute string
+            for(Map.Entry cobj:chartobj.entrySet())
+            {
+                String tempAttributeTemplate = attributeTemplate;
+                tempAttributeTemplate = tempAttributeTemplate.replaceAll("__key__", (String) cobj.getKey());
+                tempAttributeTemplate = tempAttributeTemplate.replaceAll("__value__", (String) cobj.getValue()); 
+                chartAttributeList.add(tempAttributeTemplate);
+            }
             
-            ArrayList alData = new ArrayList();
-             for(Map.Entry m:dataobj.entrySet()){
-                 
-                 Map<String, String> lv = new HashMap<String, String>();
-                 lv.put("label", (String) m.getKey());
-                 lv.put("value", (String) m.getValue());
-                 alData.add(lv);
-               }    
+            /*
+            We again use the template to convert the chart data into the XML format. 
+            */
             
-             Map<String, String> dataMap = new LinkedHashMap<String, String>();  
-             
-             
-             dataMap.put("chart", gson.toJson(chartobj));
-             dataMap.put("data", gson.toJson(alData));
+            ArrayList<String> setList = new ArrayList<String>();
+            // Iterate over each data and convert it into XML set
+            for(Map.Entry dobj:dataobj.entrySet())
+            {                
+                String tempSetTemplate = setXMLTemplate;
+                tempSetTemplate = tempSetTemplate.replaceAll("__label__", (String) dobj.getKey());
+                tempSetTemplate = tempSetTemplate.replaceAll("__value__", (String) dobj.getValue()); 
+                setList.add(tempSetTemplate);
+            }   
+            
+         /*
+            //Using Java 8 you can do this in a very clean way:
+              String.join(delimiter, elements);
+        */
+            
+            // Join the array using a single space as the delimiter.
+            StringBuilder chartAttributeString = new StringBuilder();
+            for(String s: chartAttributeList)
+            chartAttributeString.append(" " +  s);
+            
+      
+            // Join the array.
+            StringBuilder setAttributeString = new StringBuilder();
+            for(String s: setList)
+            setAttributeString.append(s);
+            
+            // Replace the chart attributes
+            chartXML = chartXML.replaceAll("__attributes__",  chartAttributeString.toString());
+            // Replace the data sets
+            chartXML = chartXML.replaceAll("__set__",  setAttributeString.toString());
 
             FusionCharts columnChart= new FusionCharts(
             "column2d",// chartType
                         "chart1",// chartId
                         600,400,// chartWidth, chartHeight
                         "chart",// chartContainer
-                        "json",// dataFormat
-                        gson.toJson(dataMap) //dataSource
+                        "xml",// dataFormat
+                       chartXML //dataSource
                     );
            
             
       out.write("\n");
       out.write("            \n");
-      out.write("            ");
+      out.write("         ");
       out.print(columnChart.render());
+      out.write("\n");
       out.write("\n");
       out.write("            \n");
       out.write("            \n");
