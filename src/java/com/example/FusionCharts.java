@@ -33,11 +33,12 @@ public class FusionCharts {
         str = str.replaceAll("\\n", "\\\\n");
         str = str.replaceAll("\\r", "\\\\r");
         str = str.replaceAll("\\00", "\\\\0");
+        str = str.replaceAll("u003d", "=");
         str = str.replaceAll("'", "\\\\'");
         str = str.replaceAll("\\\\", "");
         str = str.replaceAll("\"\\{", "{");
         str = str.replaceAll("\"\\[", "[");
-        str = str.replaceAll("\\]\"", "]");
+        str = str.replaceAll("\\}\\]\"", "}]");
         str = str.replaceAll("\"\\}\"", "\"}");
         return str;
     }

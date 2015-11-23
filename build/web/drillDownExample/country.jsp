@@ -1,5 +1,5 @@
 <%-- 
-    Document   : basic-example
+    Document   : country.jsp
     Author     : suvradip saha
 --%>
 
@@ -55,10 +55,11 @@
             
             
             // Form the SQL query that returns the top 10 most populous countries
-            String sql="SELECT Name, Population FROM Country ORDER BY Population DESC LIMIT 10";
+            String sql="SELECT * FROM Country ORDER BY Population DESC LIMIT 10";
 
-            // Execute the query.
-            PreparedStatement pt=con.prepareStatement(sql);    
+            // Prepare the query statement    
+            PreparedStatement pt=con.prepareStatement(sql);  
+            // Prepare the query statement
             ResultSet rs=pt.executeQuery();
             
             // The 'chartobj' map object holds the chart attributes and data.
@@ -101,6 +102,7 @@
                 Map<String, String> lv = new HashMap<String, String>();
                 lv.put("label", rs.getString("Name"));
                 lv.put("value", rs.getString("Population"));
+                lv.put("link", "countryDrillDown.jsp?Country=" + rs.getString("Code"));
                 arrData.add(lv);             
             }
             
@@ -113,8 +115,8 @@
             gson.toJson() the data to retrieve the string containing the
             JSON representation of the data in the array.
         */
-             dataMap.put("chart", gson.toJson(chartobj));
-             dataMap.put("data", gson.toJson(arrData));
+            dataMap.put("chart", gson.toJson(chartobj));
+            dataMap.put("data", gson.toJson(arrData));
 
             FusionCharts columnChart= new FusionCharts(
             "column2d",// chartType
@@ -131,3 +133,4 @@
         
     </body>
 </html>
+

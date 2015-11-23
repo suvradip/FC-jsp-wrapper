@@ -1,5 +1,5 @@
 <%-- 
-    Document   : basic-example
+    Document   : countryDrillDown
     Author     : suvradip saha
 --%>
 
@@ -41,7 +41,7 @@
     <body>
          <div id="chart"></div>
         <%
-         /*
+        /*
             google-gson
     
             Gson is a Java library that can be used to convert Java Objects into 
@@ -49,50 +49,55 @@
             an equivalent Java object. Gson can work with arbitrary Java objects including
             pre-existing objects that you do not have source-code of.
             link : https://github.com/google/gson    
-         */
+        */
     
             Gson gson = new Gson();
             
+            // Get the country code from the GET parameter
+            String countryCode = request.getParameter("Country");
             
             // Form the SQL query that returns the top 10 most populous countries
-            String sql="SELECT Name, Population FROM Country ORDER BY Population DESC LIMIT 10";
+            String sql="SELECT Name, Population FROM City WHERE CountryCode = ? ORDER BY Population DESC LIMIT 10";
 
+            // Prepare the query statement.
+            PreparedStatement pt=con.prepareStatement(sql);  
+            pt.setString(1, countryCode);
             // Execute the query.
-            PreparedStatement pt=con.prepareStatement(sql);    
             ResultSet rs=pt.executeQuery();
+            
+        /* 
+           Form the SQL query that will return the country name based on 
+           the country code. The result of the above query contains only the 
+           country code. The country name is needed to be rendered as a
+           caption for the chart that shows the 10 most populous cities 
+        */
+            String countryNameQuery = "SELECT Name FROM Country WHERE Code = ?";
+            
+            // Prepare the query statement.
+            PreparedStatement countryPrepStmt=con.prepareStatement(countryNameQuery); 
+            countryPrepStmt.setString(1, countryCode); 
+            // Execute the query.
+            ResultSet rs_1=countryPrepStmt.executeQuery();
+            String countryName = "";
+            if(rs_1.next())
+            countryName = rs_1.getString("Name");    
             
             // The 'chartobj' map object holds the chart attributes and data.
             Map<String, String> chartobj = new HashMap<String, String>();
             
-            chartobj.put("caption", "Split of Visitors by Age Group");
-            chartobj.put("subCaption" , "Last year");
-            chartobj.put("paletteColors" , "#0075c2,#1aaf5d,#f2c500,#f45b00,#8e0000");
-            chartobj.put("bgColor" , "#ffffff");
-            chartobj.put("showBorder" , "0");
-            chartobj.put("use3DLighting" , "0");
-            chartobj.put("showShadow" , "0");
-            chartobj.put("enableSmartLabels" , "0");
-            chartobj.put("startingAngle" , "0");
-            chartobj.put("showPercentValues" , "1");
-            chartobj.put("showPercentInTooltip" , "0");
-            chartobj.put("decimals" , "1");
-            chartobj.put("captionFontSize" , "14");
-            chartobj.put("subcaptionFontSize" , "14");
-            chartobj.put("subcaptionFontBold" , "0");
-            chartobj.put("toolTipColor" , "#ffffff");
-            chartobj.put( "toolTipBorderThickness" , "0");
-            chartobj.put("toolTipBgColor" , "#000000");
-            chartobj.put("toolTipBgAlpha" , "80");
-            chartobj.put("toolTipBorderRadius" , "2");
-            chartobj.put("toolTipPadding" , "5");
-            chartobj.put("showHoverEffect" , "1");
-            chartobj.put("showLegend" , "1");
-            chartobj.put("legendBgColor" , "#ffffff");
-            chartobj.put("legendBorderAlpha" , "0");
-            chartobj.put("legendShadow" , "0");
-            chartobj.put("legendItemFontSize" , "10");
-            chartobj.put("legendItemFontColor" , "#666666");
-            chartobj.put("useDataPlotColorForLabels" , "1");
+                chartobj.put("caption","Top 10 Most Populous Cities in " + countryName);
+                chartobj.put("paletteColors" , "#0075c2");
+                chartobj.put("bgColor" , "#ffffff");
+                chartobj.put("borderAlpha", "20");
+                chartobj.put("canvasBorderAlpha", "0");
+                chartobj.put("usePlotGradientColor", "0");
+                chartobj.put("plotBorderAlpha", "10");
+                chartobj.put("showXAxisLine", "1");
+                chartobj.put("xAxisLineColor" , "#999999");
+                chartobj.put("showValues", "0");
+                chartobj.put("divlineColor" , "#999999");
+                chartobj.put("divLineIsDashed" , "1");
+                chartobj.put("showAlternateHGridColor" , "0");
  
             // Push the data into the array using map object.
             ArrayList arrData = new ArrayList();
@@ -115,7 +120,7 @@
         */
              dataMap.put("chart", gson.toJson(chartobj));
              dataMap.put("data", gson.toJson(arrData));
-
+ 
             FusionCharts columnChart= new FusionCharts(
             "column2d",// chartType
                         "chart1",// chartId

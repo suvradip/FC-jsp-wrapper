@@ -55,7 +55,7 @@
             
             
             // Form the SQL query that returns the top 10 most populous countries
-            String sql="SELECT * FROM Country ORDER BY Population DESC LIMIT 10";
+            String sql="SELECT Name, Population FROM Country ORDER BY Population DESC LIMIT 10";
 
             // Execute the query.
             PreparedStatement pt=con.prepareStatement(sql);    
